@@ -1,4 +1,5 @@
-FROM openjdk:18
+FROM openjdk:19
+RUN microdnf install findutils
 
 # ARG GRADLE_VERSION=8.5
 #
