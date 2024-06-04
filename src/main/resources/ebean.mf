@@ -1,0 +1,5 @@
+entity-packages: site.shaerware.store.db.models
+transactional-packages: site.shaerware.store
+querybean-packages: site.shaerware.store.db.models
+profile-location: true
+

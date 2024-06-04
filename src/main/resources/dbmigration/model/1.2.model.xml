@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <createTable name="print_job" pkName="pk_print_job">
+            <column name="host_id" type="uuid" notnull="true" references="host.id" foreignKeyName="fk_print_job_host_id" foreignKeyIndex="ix_print_job_host_id"/>
+            <column name="printer_id" type="uuid" notnull="true" references="printer.id" foreignKeyName="fk_print_job_printer_id" foreignKeyIndex="ix_print_job_printer_id"/>
+            <column name="init" type="timestamp" notnull="true"/>
+            <column name="done" type="timestamp"/>
+            <column name="data" type="varchar" notnull="true"/>
+            <uniqueConstraint name="uq_print_job_host_id_printer_id_init" columnNames="host_id,printer_id,init" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createIndex indexName="ix_print_job_init" tableName="print_job" columns="init"/>
+        <createIndex indexName="ix_print_job_host_id_printer_id_done" tableName="print_job" columns="host_id,printer_id,done"/>
+        <createIndex indexName="ix_print_job_done" tableName="print_job" columns="done"/>
+    </changeSet>
+</migration>

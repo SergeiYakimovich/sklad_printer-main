@@ -1,0 +1,34 @@
+ktor:
+  application:
+    modules:
+      - site.shaerware.store.ApplicationKt.module
+  deployment:
+    port: 8090
+
+ebean:
+  sbSchema: store
+  migration:
+    run: true
+  ddl:
+    generate: true
+    run: true
+  debug:
+    sql: true
+  logging: all
+
+
+datasource:
+  db:
+    username: postgres
+    password: ''
+    url: "jdbc:postgresql://localhost:5432/store"
+
+jwt:
+  secret: "7e62d0da-a6a5-4042-b49d-7c391e87bf93"
+  issuer: "http://0.0.0.0:8080/"
+  audience: "http://0.0.0.0:8080/api/v1"
+  realm: "Access to API"
+
+password:
+  salt: "123"
+  algorithm: "SHA-256"

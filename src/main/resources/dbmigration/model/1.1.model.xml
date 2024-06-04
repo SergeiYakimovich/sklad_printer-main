@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <createTable name="host" identityType="external" pkName="pk_host">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <uniqueConstraint name="uq_host_name" columnNames="name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="printer" identityType="external" pkName="pk_printer">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="host.id" foreignKeyName="fk_printer_owner_id" foreignKeyIndex="ix_printer_owner_id"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <column name="page_width" type="float"/>
+            <column name="page_height" type="float"/>
+            <column name="cols" type="integer"/>
+            <column name="rows" type="integer"/>
+            <uniqueConstraint name="uq_printer_owner_id_name" columnNames="owner_id,name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+    </changeSet>
+</migration>

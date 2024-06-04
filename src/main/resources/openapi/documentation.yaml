@@ -1,0 +1,2798 @@
+openapi: 3.0.0
+
+info:
+  title: Store API
+  description: HTTP-доступ к объектам и методам базы данных.
+  version: 0.0.1
+
+servers:
+  - url: /api/v1
+    description: Текущий сервер
+#  - url: http://127.0.0.1:8080/api/v1
+#    description: Локальный сервер
+#  - url: http://45.86.182.75/api/v1
+#    description: Тестовый сервер
+
+security:
+  - jwt: []
+
+paths:
+  /version:
+    get:
+      summary: Версия сервиса
+      security: []
+      tags:
+        - Служебное
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: object
+                    properties:
+                      version:
+                        type: string
+
+  /login:
+    post:
+      summary: Запрос ключа авторизации
+      security: []
+      tags:
+        - Авторизация
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                  default: admin
+                password:
+                  type: string
+                  format: password
+                  default: password
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: object
+                    properties:
+                      token:
+                        type: string
+                        description: JWT Token
+
+  /user:
+    get:
+      summary: Список пользователей
+      tags:
+        - Права доступа
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Часть наименования (без учета регистра)
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/UserRs'
+    post:
+      summary: Добавить нового пользователя
+      tags:
+        - Права доступа
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/UserRs'
+  /user/{id}:
+    get:
+      summary: Пользователь по ID
+      tags:
+        - Права доступа
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/UserRs'
+    put:
+      summary: Изменить данные пользователя
+      tags:
+        - Права доступа
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/UserRs'
+    delete:
+      summary: Удалить пользователя
+      tags:
+        - Права доступа
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор пользователя
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/UserRs'
+
+  /role:
+    get:
+      summary: Список групп
+      tags:
+        - Права доступа
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Часть наименования (без учета регистра)
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/RoleRs'
+    post:
+      summary: Добавить новую группу
+      tags:
+        - Права доступа
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/RoleRs'
+  /role/{id}:
+    get:
+      summary: Группа по ID
+      tags:
+        - Права доступа
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор группы
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/RoleRs'
+    put:
+      summary: Изменить данные пользователя
+      tags:
+        - Права доступа
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор группы
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RoleRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/RoleRs'
+    delete:
+      summary: Удалить группу
+      tags:
+        - Права доступа
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор группы
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/RoleRs'
+
+  /store:
+    get:
+      summary: Список складов
+      tags:
+        - Склад
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Часть наименования (без учета регистра)
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/StoreRs'
+    post:
+      summary: Добавить новый склад
+      tags:
+        - Склад
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreCreateRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/StoreRs'
+  /store/{id}:
+    get:
+      summary: Склад по ID
+      tags:
+        - Склад
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/StoreRs'
+    put:
+      summary: Изменить данные склада
+      tags:
+        - Склад
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoreUpdateRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/StoreRs'
+    delete:
+      summary: Удалить склад
+      tags:
+        - Склад
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/StoreRs'
+
+  /store/{storeId}/cell:
+    get:
+      summary: Список ячеек склада
+      tags:
+        - Склад
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: search
+          in: query
+          required: false
+          description: Начало кода ячейки (без учета регистра)
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CellRs'
+    post:
+      summary: Добавить новую ячейку
+      tags:
+        - Склад
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CellRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CellRs'
+  /store/{storeId}/cell/{id}:
+    get:
+      summary: Ячейка по ID
+      tags:
+        - Склад
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор ячейки
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CellRs'
+    put:
+      summary: Изменить данные ячейки
+      tags:
+        - Склад
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор ячейки
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CellRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CellRs'
+    delete:
+      summary: Удалить ячейку
+      tags:
+        - Склад
+      parameters:
+        - name: storeId
+          in: path
+          required: true
+          description: Идентификатор склада
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор ячейки
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CellRs'
+
+  /vendor:
+    get:
+      summary: Список производителей
+      tags:
+        - Товары
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Часть наименования (без учета регистра)
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/VendorRs'
+    post:
+      summary: Добавить нового производителя
+      tags:
+        - Товары
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/VendorRs'
+  /vendor/{id}:
+    get:
+      summary: Производитель по ID
+      tags:
+        - Товары
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор производителя
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/VendorRs'
+    put:
+      summary: Изменить данные производителя
+      tags:
+        - Товары
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор производителя
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/VendorRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/VendorRs'
+    delete:
+      summary: Удалить производителя
+      tags:
+        - Товары
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор производителя
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/VendorRs'
+
+  /product:
+    get:
+      summary: Список товаров
+      tags:
+        - Товары
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Часть наименования (без учета регистра)
+          schema:
+            $ref: '#/components/schemas/String'
+        - name: vendorId
+          in: query
+          required: false
+          description: Идентификатор производителя
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: code
+          in: query
+          required: false
+          description: Начальная часть кода (ищет в OEM, SKU и штрих-коде)
+          schema:
+            $ref: '#/components/schemas/String'
+        - name: oem
+          in: query
+          required: false
+          description: Начальная часть OEM-кода
+          schema:
+            $ref: '#/components/schemas/String'
+        - name: sku
+          in: query
+          required: false
+          description: Начальная часть SKU-кода
+          schema:
+            $ref: '#/components/schemas/String'
+        - name: barcode
+          in: query
+          required: false
+          description: Штрих-код
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductListRs'
+    post:
+      summary: Добавить новый товар
+      tags:
+        - Товары
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/ProductReadRs'
+  /product/{id}:
+    get:
+      summary: Товар по ID
+      tags:
+        - Товары
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/ProductReadRs'
+    put:
+      summary: Изменить данные товара
+      tags:
+        - Товары
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ProductRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/ProductReadRs'
+    delete:
+      summary: Удалить товар
+      tags:
+        - Товары
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/ProductReadRs'
+
+  /product/{productId}/image:
+    get:
+      summary: Список изображений товара
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ProductImageTO'
+    post:
+      summary: Загрузить новое изображение
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                image:
+                  type: string
+                  format: binary
+            encoding:
+              image:
+                contentType: image/gif, image/png, image/jpeg, image/webp, image/svg+xml
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/ProductImageTO'
+  /product/{productId}/image/{id}:
+    get:
+      summary: Данные об изображении по ID
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор изображения
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/ProductImageTO'
+    delete:
+      summary: Удалить изображение
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор изображения
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/ProductImageTO'
+  /product/{productId}/image/{id}/file:
+    get:
+      summary: Файл изображения по ID
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор изображения
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+#            image/png:
+#              type: string
+#              format: binary
+#            image/jpeg:
+#              type: string
+#              format: binary
+#            image/webp:
+#              type: string
+#              format: binary
+#            image/svg+xml:
+#              type: string
+#              format: binary
+
+  /product/{productId}/lot:
+    get:
+      summary: Список партий товара
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: from
+          in: query
+          required: false
+          description: Начало периода
+          schema:
+            $ref: '#/components/schemas/Date'
+        - name: to
+          in: query
+          required: false
+          description: Конец периода
+          schema:
+            $ref: '#/components/schemas/Date'
+        - name: code
+          in: query
+          required: false
+          description: Начало OEM-кода или штрихкод
+          schema:
+            $ref: '#/components/schemas/String'
+        - name: oem
+          in: query
+          required: false
+          description: Начало OEM-кода
+          schema:
+            $ref: '#/components/schemas/String'
+        - name: barcode
+          in: query
+          required: false
+          description: Штрих-код
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LotRs'
+    post:
+      summary: Добавить новую партию
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LotRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LotRs'
+  /product/{productId}/lot/{id}:
+    get:
+      summary: Партия по ID
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор партии
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LotRs'
+    put:
+      summary: Изменить данные партии
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор партии
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LotRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LotRs'
+    delete:
+      summary: Удалить партию
+      tags:
+        - Товары
+      parameters:
+        - name: productId
+          in: path
+          required: true
+          description: Идентификатор товара
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор партии
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LotRs'
+
+  /counterparty:
+    get:
+      summary: Список контрагентов
+      tags:
+        - Контрагенты
+      parameters:
+        - name: search
+          in: query
+          required: false
+          description: Часть названия (без учета регистра)
+          schema:
+            $ref: '#/components/schemas/String'
+        - name: inn
+          in: query
+          required: false
+          description: ИНН
+          schema:
+            $ref: '#/components/schemas/String'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CounterpartyListRs'
+    post:
+      summary: Добавить нового контрагента
+      tags:
+        - Контрагенты
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterpartyCreateRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CounterpartyReadRs'
+  /counterparty/{id}:
+    get:
+      summary: Контрагент по ID
+      tags:
+        - Контрагенты
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CounterpartyReadRs'
+    put:
+      summary: Изменить данные контрагента
+      tags:
+        - Контрагенты
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CounterpartyUpdateRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CounterpartyReadRs'
+    delete:
+      summary: Удалить контрагента
+      tags:
+        - Контрагенты
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/CounterpartyReadRs'
+
+  /counterparty/{counterpartyId}/contract:
+    get:
+      summary: Список договоров данного контрагента
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ContractRs'
+    post:
+      summary: Добавить новый договор
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRs'
+  /counterparty/{counterpartyId}/contract/{id}:
+    get:
+      summary: Договор по ID
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор договора
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRs'
+    put:
+      summary: Изменить данные договора
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор договора
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ContractRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRs'
+    delete:
+      summary: Удалить договор
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор договора
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ContractRs'
+
+  /counterparty/{counterpartyId}/bankaccount:
+    get:
+      summary: Список банковских счетов данного контрагента
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/BankAccountRs'
+    post:
+      summary: Добавить новый банковский счет
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankAccountRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountRs'
+  /counterparty/{counterpartyId}/bankaccount/{id}:
+    get:
+      summary: Банковский счет по ID
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор банковского счета
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountRs'
+    put:
+      summary: Изменить данные банковского счета
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор банковского счета
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BankAccountRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountRs'
+    delete:
+      summary: Удалить банковский счет
+      tags:
+        - Контрагенты
+      parameters:
+        - name: counterpartyId
+          in: path
+          required: true
+          description: Идентификатор контрагента
+          schema:
+            $ref: '#/components/schemas/UUID'
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор банковского счета
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BankAccountRs'
+
+  /incoming:
+    get:
+      summary: Список приходов
+      tags:
+        - Приход
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Начало периода
+          schema:
+            $ref: '#/components/schemas/Date'
+        - name: to
+          in: query
+          required: false
+          description: Конец периода
+          schema:
+            $ref: '#/components/schemas/Date'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/IncomingListRs'
+    post:
+      summary: Создать новый приход
+      tags:
+        - Приход
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncomingRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/IncomingReadRs'
+  /incoming/{id}:
+    get:
+      summary: Приход по ID
+      tags:
+        - Приход
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/IncomingReadRs'
+    put:
+      summary: Изменить данные прихода
+      tags:
+        - Приход
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/IncomingRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/IncomingReadRs'
+    delete:
+      summary: Удалить приход
+      tags:
+        - Приход
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/IncomingReadRs'
+
+  /layouting:
+    get:
+      summary: Список распределений
+      tags:
+        - Распределение
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Начало периода
+          schema:
+            $ref: '#/components/schemas/Date'
+        - name: to
+          in: query
+          required: false
+          description: Конец периода
+          schema:
+            $ref: '#/components/schemas/Date'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/LayoutingListRs'
+    post:
+      summary: Создать новое распределение
+      tags:
+        - Распределение
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LayoutingRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LayoutingReadRs'
+  /layouting/{id}:
+    get:
+      summary: Распределение по ID
+      tags:
+        - Распределение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LayoutingReadRs'
+    put:
+      summary: Изменить данные распределения
+      tags:
+        - Распределение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LayoutingRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LayoutingReadRs'
+    delete:
+      summary: Удалить распределение
+      tags:
+        - Распределение
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/LayoutingReadRs'
+
+  /ordering:
+    get:
+      summary: Список заказов
+      tags:
+        - Заказ
+      parameters:
+        - name: from
+          in: query
+          required: false
+          description: Начало периода
+          schema:
+            $ref: '#/components/schemas/Date'
+        - name: to
+          in: query
+          required: false
+          description: Конец периода
+          schema:
+            $ref: '#/components/schemas/Date'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/OrderingListRs'
+    post:
+      summary: Создать новый заказ
+      tags:
+        - Заказ
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderingRq'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/OrderingReadRs'
+  /ordering/{id}:
+    get:
+      summary: Заказ по ID
+      tags:
+        - Заказ
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/OrderingReadRs'
+    put:
+      summary: Изменить данные заказа
+      tags:
+        - Заказ
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/OrderingRq'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/OrderingReadRs'
+    delete:
+      summary: Удалить заказ
+      tags:
+        - Заказ
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Идентификатор документа
+          schema:
+            $ref: '#/components/schemas/UUID'
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    $ref: '#/components/schemas/OrderingReadRs'
+
+components:
+  securitySchemes:
+    jwt:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    UUID:
+      type: string
+      format: uuid
+    UUIDN:
+      type: string
+      format: uuid
+      nullable: true
+    Date:
+      type: string
+      format: date
+    DateN:
+      type: string
+      format: date
+      nullable: true
+    DateTime:
+      type: string
+      format: date-time
+    String:
+      type: string
+    StoreRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        cells:
+          type: array
+          items:
+            $ref: '#/components/schemas/CellRs'
+    StoreCreateRq:
+      type: object
+      properties:
+        name:
+          type: string
+        cells:
+          type: array
+          items:
+            $ref: '#/components/schemas/CellRq'
+    StoreUpdateRq:
+      type: object
+      properties:
+        name:
+          type: string
+    CellRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        ownerId:
+          $ref: '#/components/schemas/UUID'
+        code:
+          type: string
+        depth:
+          type: number
+          nullable: true
+        width:
+          type: number
+          nullable: true
+        height:
+          type: number
+          nullable: true
+        maxWeight:
+          type: number
+          nullable: true
+        maxVolume:
+          type: number
+          nullable: true
+    CellRq:
+      type: object
+      properties:
+        code:
+          type: string
+        depth:
+          type: number
+          nullable: true
+        width:
+          type: number
+          nullable: true
+        height:
+          type: number
+          nullable: true
+        maxWeight:
+          type: number
+          nullable: true
+        maxVolume:
+          type: number
+          nullable: true
+    UserRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UUID'
+    UserRq:
+      type: object
+      properties:
+        name:
+          type: string
+        password:
+          type: string
+          format: password
+        roles:
+          type: array
+          items:
+            $ref: '#/components/schemas/UUID'
+    RoleRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        references:
+          type: array
+          items:
+            $ref: '#/components/schemas/RefPxTO'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocPxTO'
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepPxTO'
+    RoleRq:
+      type: object
+      properties:
+        name:
+          type: string
+        references:
+          type: array
+          items:
+            $ref: '#/components/schemas/RefPxTO'
+        documents:
+          type: array
+          items:
+            $ref: '#/components/schemas/DocPxTO'
+        reports:
+          type: array
+          items:
+            $ref: '#/components/schemas/RepPxTO'
+    RefPxTO:
+      type: object
+      properties:
+        entity:
+          type: string
+          enum:
+            - Vendor
+            - Product
+            - Lot
+            - Counterparty
+            - Contract
+            - BankAccount
+            - Store
+            - Cell
+            - User
+            - Role
+        allowCreate:
+          type: boolean
+          nullable: true
+        allowRead:
+          type: boolean
+          nullable: true
+        allowUpdate:
+          type: boolean
+          nullable: true
+        allowDelete:
+          type: boolean
+          nullable: true
+        allowList:
+          type: boolean
+          nullable: true
+    DocPxTO:
+      type: object
+      properties:
+        entity:
+          type: string
+          enum:
+            - Incoming
+            - Layouting
+            - Ordering
+        allowCreate:
+          type: boolean
+          nullable: true
+        allowRead:
+          type: boolean
+          nullable: true
+        allowUpdate:
+          type: boolean
+          nullable: true
+        allowActivate:
+          type: boolean
+          nullable: true
+        allowDelete:
+          type: boolean
+          nullable: true
+        allowList:
+          type: boolean
+          nullable: true
+    RepPxTO:
+      type: object
+      properties:
+        entity:
+          type: string
+        allowUse:
+          type: boolean
+          nullable: true
+    VendorRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+    VendorRq:
+      type: object
+      properties:
+        name:
+          type: string
+    ProductListRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        vendor:
+          $ref: '#/components/schemas/VendorRs'
+        oemCode:
+          type: string
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        images:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/ProductImageTO'
+    ProductReadRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        vendor:
+          $ref: '#/components/schemas/VendorRs'
+        oemCode:
+          type: string
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        lots:
+          type: array
+          nullable: true
+          items:
+            $ref: '#/components/schemas/LotRs'
+        images:
+          type: array
+          nullable: true
+          items:
+            type: object
+            properties:
+              url:
+                type: string
+                format: uri
+    ProductRq:
+      type: object
+      properties:
+        name:
+          type: string
+        vendorId:
+          $ref: '#/components/schemas/UUID'
+        oemCode:
+          type: string
+          nullable: true
+        sku:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+    ProductImageTO:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        ownerId:
+          $ref: '#/components/schemas/UUID'
+        url:
+          type: string
+        type:
+          type: string
+          nullable: true
+        mimeType:
+          type: string
+    LotRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        ownerId:
+          $ref: '#/components/schemas/UUID'
+        date:
+          $ref: '#/components/schemas/DateTime'
+        documentId:
+          $ref: '#/components/schemas/UUID'
+        oemCode:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        incomingQuantify:
+          type: number
+        price:
+          type: number
+        priceCurrency:
+          type: string
+          format: currency
+          nullable: true
+        weight:
+          type: number
+          nullable: true
+        cost:
+          type: number
+          nullable: true
+        costCurrency:
+          type: string
+          format: currency
+          nullable: true
+    LotRq:
+      type: object
+      properties:
+        date:
+          $ref: '#/components/schemas/DateTime'
+        documentId:
+          $ref: '#/components/schemas/UUID'
+        oemCode:
+          type: string
+          nullable: true
+        barcode:
+          type: string
+          nullable: true
+        incomingQuantify:
+          type: number
+        price:
+          type: number
+        priceCurrency:
+          type: string
+          format: currency
+          nullable: true
+        weight:
+          type: number
+          nullable: true
+        cost:
+          type: number
+          nullable: true
+        costCurrency:
+          type: string
+          format: currency
+          nullable: true
+    CounterpartyListRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        fullName:
+          type: string
+          nullable: true
+        legalForm:
+          type: string
+        inn:
+          type: string
+          nullable: true
+        kpp:
+          type: string
+          nullable: true
+        okpo:
+          type: string
+          nullable: true
+        ogrn:
+          type: string
+          nullable: true
+        registration:
+          $ref: '#/components/schemas/DateN'
+        addressLegal:
+          type: string
+          nullable: true
+        addressActual:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        emailForDoc:
+          type: string
+          format: email
+          nullable: true
+        site:
+          type: string
+          format: uri
+          nullable: true
+        phone:
+          type: string
+          format: phone
+          nullable: true
+        directorGeneral:
+          type: string
+          nullable: true
+        accountantGeneral:
+          type: string
+          nullable: true
+    CounterpartyReadRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        fullName:
+          type: string
+          nullable: true
+        legalForm:
+          type: string
+        inn:
+          type: string
+          nullable: true
+        kpp:
+          type: string
+          nullable: true
+        okpo:
+          type: string
+          nullable: true
+        ogrn:
+          type: string
+          nullable: true
+        registration:
+          $ref: '#/components/schemas/DateN'
+        addressLegal:
+          type: string
+          nullable: true
+        addressActual:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        emailForDoc:
+          type: string
+          format: email
+          nullable: true
+        site:
+          type: string
+          format: uri
+          nullable: true
+        phone:
+          type: string
+          format: phone
+          nullable: true
+        directorGeneral:
+          type: string
+          nullable: true
+        accountantGeneral:
+          type: string
+          nullable: true
+        contracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractRs'
+        bankAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankAccountRs'
+    CounterpartyCreateRq:
+      type: object
+      properties:
+        name:
+          type: string
+        fullName:
+          type: string
+          nullable: true
+        legalForm:
+          type: string
+        inn:
+          type: string
+          nullable: true
+        kpp:
+          type: string
+          nullable: true
+        okpo:
+          type: string
+          nullable: true
+        ogrn:
+          type: string
+          nullable: true
+        registration:
+          $ref: '#/components/schemas/DateN'
+        addressLegal:
+          type: string
+          nullable: true
+        addressActual:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        emailForDoc:
+          type: string
+          format: email
+          nullable: true
+        site:
+          type: string
+          format: uri
+          nullable: true
+        phone:
+          type: string
+          format: phone
+          nullable: true
+        directorGeneral:
+          type: string
+          nullable: true
+        accountantGeneral:
+          type: string
+          nullable: true
+        contracts:
+          type: array
+          items:
+            $ref: '#/components/schemas/ContractRq'
+        bankAccounts:
+          type: array
+          items:
+            $ref: '#/components/schemas/BankAccountRq'
+    CounterpartyUpdateRq:
+      type: object
+      properties:
+        name:
+          type: string
+        fullName:
+          type: string
+          nullable: true
+        legalForm:
+          type: string
+        inn:
+          type: string
+          nullable: true
+        kpp:
+          type: string
+          nullable: true
+        okpo:
+          type: string
+          nullable: true
+        ogrn:
+          type: string
+          nullable: true
+        registration:
+          $ref: '#/components/schemas/DateN'
+        addressLegal:
+          type: string
+          nullable: true
+        addressActual:
+          type: string
+          nullable: true
+        email:
+          type: string
+          format: email
+          nullable: true
+        emailForDoc:
+          type: string
+          format: email
+          nullable: true
+        site:
+          type: string
+          format: uri
+          nullable: true
+        phone:
+          type: string
+          format: phone
+          nullable: true
+        directorGeneral:
+          type: string
+          nullable: true
+        accountantGeneral:
+          type: string
+          nullable: true
+    ContractRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        ownerId:
+          $ref: '#/components/schemas/UUID'
+        kind:
+          type: integer
+          description: 1 - покупатель, 2 - продавец
+        code:
+          type: string
+        name:
+          type: string
+          nullable: true
+        date:
+          $ref: '#/components/schemas/Date'
+        expiration:
+          $ref: '#/components/schemas/DateN'
+        deferment:
+          type: integer
+          nullable: true
+    ContractRq:
+      type: object
+      properties:
+        kind:
+          type: integer
+          description: 1 - покупатель, 2 - продавец
+        code:
+          type: string
+        name:
+          type: string
+          nullable: true
+        date:
+          $ref: '#/components/schemas/Date'
+        expiration:
+          $ref: '#/components/schemas/DateN'
+        deferment:
+          type: integer
+          nullable: true
+    BankAccountRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        ownerId:
+          $ref: '#/components/schemas/UUID'
+        name:
+          type: string
+        bank:
+          type: string
+        bik:
+          type: string
+        correspondentAcc:
+          type: string
+        accountNumber:
+          type: string
+    BankAccountRq:
+      type: object
+      properties:
+        name:
+          type: string
+        bank:
+          type: string
+        bik:
+          type: string
+        correspondentAcc:
+          type: string
+        accountNumber:
+          type: string
+
+    IncomingListRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        counterpartyId:
+          $ref: '#/components/schemas/UUID'
+        contractId:
+          $ref: '#/components/schemas/UUID'
+        currency:
+          type: string
+          format: currency
+          nullable: true
+        storeId:
+          $ref: '#/components/schemas/UUIDN'
+    IncomingReadRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        counterpartyId:
+          $ref: '#/components/schemas/UUID'
+        contractId:
+          $ref: '#/components/schemas/UUID'
+        currency:
+          type: string
+          format: currency
+          nullable: true
+        storeId:
+          $ref: '#/components/schemas/UUIDN'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomingITO'
+    IncomingRq:
+      type: object
+      properties:
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        counterpartyId:
+          $ref: '#/components/schemas/UUID'
+        contractId:
+          $ref: '#/components/schemas/UUID'
+        currency:
+          type: string
+          format: currency
+          nullable: true
+        storeId:
+          $ref: '#/components/schemas/UUIDN'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/IncomingITO'
+    IncomingITO:
+      type: object
+      properties:
+        orderNo:
+          type: integer
+        oemCode:
+          type: string
+          nullable: true
+        productId:
+          $ref: '#/components/schemas/UUID'
+        quantity:
+          type: number
+        price:
+          type: number
+        weight:
+          type: number
+        cost:
+          type: number
+        lotId:
+          $ref: '#/components/schemas/UUID'
+
+    LayoutingListRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        incomingId:
+          $ref: '#/components/schemas/UUID'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+    LayoutingReadRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        incomingId:
+          $ref: '#/components/schemas/UUID'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayoutingITO'
+    LayoutingRq:
+      type: object
+      properties:
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        incomingId:
+          $ref: '#/components/schemas/UUID'
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/LayoutingITO'
+    LayoutingITO:
+      type: object
+      properties:
+        orderNo:
+          type: integer
+        fromId:
+          $ref: '#/components/schemas/UUIDN'
+        toId:
+          $ref: '#/components/schemas/UUIDN'
+        productId:
+          $ref: '#/components/schemas/UUID'
+        lotId:
+          $ref: '#/components/schemas/UUIDN'
+        quantity:
+          type: number
+
+    OrderingListRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        counterpartyId:
+          $ref: '#/components/schemas/UUID'
+        contractId:
+          $ref: '#/components/schemas/UUID'
+        currency:
+          type: string
+          format: currency
+        storeId:
+          $ref: '#/components/schemas/UUID'
+    OrderingReadRs:
+      type: object
+      properties:
+        id:
+          $ref: '#/components/schemas/UUID'
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        counterpartyId:
+          $ref: '#/components/schemas/UUID'
+        contractId:
+          $ref: '#/components/schemas/UUID'
+        currency:
+          type: string
+          format: currency
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderingITO'
+    OrderingRq:
+      type: object
+      properties:
+        date:
+          $ref: '#/components/schemas/DateTime'
+        code:
+          type: string
+        active:
+          type: boolean
+        counterpartyId:
+          $ref: '#/components/schemas/UUID'
+        contractId:
+          $ref: '#/components/schemas/UUID'
+        currency:
+          type: string
+          format: currency
+        storeId:
+          $ref: '#/components/schemas/UUID'
+        items:
+          type: array
+          items:
+            $ref: '#/components/schemas/OrderingITO'
+    OrderingITO:
+      type: object
+      properties:
+        orderNo:
+          type: integer
+        productId:
+          $ref: '#/components/schemas/UUID'
+        quantity:
+          type: number
+        price:
+          type: number
+        summa:
+          type: number
+        cellId:
+          $ref: '#/components/schemas/UUIDN'
+        lotId:
+          $ref: '#/components/schemas/UUIDN'
+
+tags:
+  - name: Служебное
+  - name: Авторизация
+  - name: Права доступа
+    description: Пользователи и группы
+  - name: Склад
+    description: Структура складов и ячеек
+  - name: Товары
+    description: Номенклатура и партии
+  - name: Контрагенты
+  - name: Приход
+    description: Приходные документы
+  - name: Распределение
+    description: Распределение товара по ячейкам
+  - name: Заказ
+    description: Заказы, т.е. расходные документы

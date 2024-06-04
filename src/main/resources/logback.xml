@@ -1,0 +1,22 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{YYYY-MM-dd HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <root level="trace">
+        <appender-ref ref="STDOUT"/>
+    </root>
+    <logger name="org.eclipse.jetty" level="INFO"/>
+    <logger name="io.netty" level="INFO"/>
+
+    <!-- SQL and bind values -->
+    <logger name="io.ebean.SQL" level="TRACE"/>
+
+    <!-- Transaction Commit and Rollback events -->
+    <logger name="io.ebean.TXN" level="TRACE"/>
+
+    <logger name="io.bean" level="TRACE" />
+
+    <logger name="org.jdbcdslog.StatementLogger"  level="INFO" />
+</configuration>

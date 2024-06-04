@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <createTable name="bank_account" identityType="external" pkName="pk_bank_account">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="counterparty.id" foreignKeyName="fk_bank_account_owner_id" foreignKeyIndex="ix_bank_account_owner_id"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <column name="bank" type="varchar" notnull="true"/>
+            <column name="bik" type="varchar" notnull="true"/>
+            <column name="correspondent_acc" type="varchar" notnull="true"/>
+            <column name="account_number" type="varchar" notnull="true"/>
+            <uniqueConstraint name="uq_bank_account_owner_id_name" columnNames="owner_id,name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="cell" identityType="external" pkName="pk_cell">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="store.id" foreignKeyName="fk_cell_owner_id" foreignKeyIndex="ix_cell_owner_id"/>
+            <column name="code" type="varchar" notnull="true"/>
+            <column name="depth" type="decimal"/>
+            <column name="width" type="decimal"/>
+            <column name="height" type="decimal"/>
+            <column name="max_weight" type="decimal"/>
+            <column name="max_volume" type="decimal"/>
+            <uniqueConstraint name="uq_cell_owner_id_code" columnNames="owner_id,code" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="contract" identityType="external" pkName="pk_contract">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="counterparty.id" foreignKeyName="fk_contract_owner_id" foreignKeyIndex="ix_contract_owner_id"/>
+            <column name="kind" type="integer" notnull="true" checkConstraint="check ( kind in (1,2))" checkConstraintName="ck_contract_kind"/>
+            <column name="code" type="varchar" notnull="true"/>
+            <column name="name" type="varchar"/>
+            <column name="date" type="timestamp" notnull="true"/>
+            <column name="expiration" type="timestamp"/>
+            <column name="deferment" type="integer"/>
+            <uniqueConstraint name="uq_contract_owner_id_code" columnNames="owner_id,code" oneToOne="false" nullableColumns=""/>
+            <uniqueConstraint name="uq_contract_owner_id_kind_code" columnNames="owner_id,kind,code" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="counterparty" identityType="external" pkName="pk_counterparty">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <column name="full_name" type="varchar"/>
+            <column name="legal_form" type="varchar" notnull="true"/>
+            <column name="inn" type="varchar(12)"/>
+            <column name="kpp" type="varchar(9)"/>
+            <column name="okpo" type="varchar(14)"/>
+            <column name="ogrn" type="varchar(13)"/>
+            <column name="registration" type="timestamp"/>
+            <column name="address_legal" type="varchar"/>
+            <column name="address_actual" type="varchar"/>
+            <column name="email" type="varchar"/>
+            <column name="email_for_doc" type="varchar"/>
+            <column name="site" type="varchar"/>
+            <column name="phone" type="varchar"/>
+            <column name="director_general" type="varchar"/>
+            <column name="accountant_general" type="varchar"/>
+        </createTable>
+        <createTable name="document" identityType="external" pkName="pk_document">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="date" type="timestamp" defaultValue="now" notnull="true"/>
+            <column name="type" type="varchar(9)" notnull="true" checkConstraint="check ( type in ('Incoming','Layouting','Ordering'))" checkConstraintName="ck_document_type"/>
+            <column name="code" type="varchar" notnull="true"/>
+            <column name="active" type="boolean" defaultValue="false" notnull="true"/>
+        </createTable>
+        <createTable name="auth_documents" identityType="external" pkName="pk_auth_documents">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="auth_roles.id" foreignKeyName="fk_auth_documents_owner_id" foreignKeyIndex="ix_auth_documents_owner_id"/>
+            <column name="entity" type="varchar(9)" notnull="true" checkConstraint="check ( entity in ('Incoming','Layouting','Ordering'))" checkConstraintName="ck_auth_documents_entity"/>
+            <column name="allow_create" type="boolean"/>
+            <column name="allow_read" type="boolean"/>
+            <column name="allow_update" type="boolean"/>
+            <column name="allow_activate" type="boolean"/>
+            <column name="allow_delete" type="boolean"/>
+            <column name="allow_list" type="boolean"/>
+            <uniqueConstraint name="uq_auth_documents_owner_id_entity" columnNames="owner_id,entity" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="incoming" identityType="external" pkName="pk_incoming">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="date" type="timestamp" defaultValue="now" notnull="true"/>
+            <column name="code" type="varchar" notnull="true"/>
+            <column name="active" type="boolean" defaultValue="false" notnull="true"/>
+            <column name="counterparty_id" type="uuid" notnull="true" references="counterparty.id" foreignKeyName="fk_incoming_counterparty_id" foreignKeyIndex="ix_incoming_counterparty_id"/>
+            <column name="contract_id" type="uuid" notnull="true" references="contract.id" foreignKeyName="fk_incoming_contract_id" foreignKeyIndex="ix_incoming_contract_id"/>
+            <column name="currency" type="varchar(3)"/>
+            <column name="store_id" type="uuid" references="store.id" foreignKeyName="fk_incoming_store_id" foreignKeyIndex="ix_incoming_store_id"/>
+        </createTable>
+        <createTable name="incoming_item" pkName="pk_incoming_item">
+            <column name="owner_id" type="uuid" notnull="true" primaryKey="true" references="incoming.id" foreignKeyName="fk_incoming_item_owner_id" foreignKeyIndex="ix_incoming_item_owner_id"/>
+            <column name="order_no" type="integer" notnull="true" primaryKey="true"/>
+            <column name="oem_code" type="varchar"/>
+            <column name="product_id" type="uuid" notnull="true" references="product.id" foreignKeyName="fk_incoming_item_product_id" foreignKeyIndex="ix_incoming_item_product_id"/>
+            <column name="quantity" type="decimal" defaultValue="0" notnull="true"/>
+            <column name="price" type="decimal" defaultValue="0" notnull="true"/>
+            <column name="weight" type="decimal" defaultValue="0" notnull="true"/>
+            <column name="cost" type="decimal" defaultValue="0" notnull="true"/>
+            <column name="lot_id" type="uuid" references="lot.id" foreignKeyName="fk_incoming_item_lot_id" foreignKeyIndex="ix_incoming_item_lot_id"/>
+        </createTable>
+        <createTable name="layouting" identityType="external" pkName="pk_layouting">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="date" type="timestamp" defaultValue="now" notnull="true"/>
+            <column name="code" type="varchar" notnull="true"/>
+            <column name="active" type="boolean" defaultValue="false" notnull="true"/>
+            <column name="incoming_id" type="uuid" notnull="true" references="incoming.id" foreignKeyName="fk_layouting_incoming_id" foreignKeyIndex="ix_layouting_incoming_id"/>
+            <column name="store_id" type="uuid" notnull="true" references="store.id" foreignKeyName="fk_layouting_store_id" foreignKeyIndex="ix_layouting_store_id"/>
+        </createTable>
+        <createTable name="layouting_item" pkName="pk_layouting_item">
+            <column name="owner_id" type="uuid" notnull="true" primaryKey="true" references="layouting.id" foreignKeyName="fk_layouting_item_owner_id" foreignKeyIndex="ix_layouting_item_owner_id"/>
+            <column name="order_no" type="integer" notnull="true" primaryKey="true"/>
+            <column name="from_id" type="uuid" references="cell.id" foreignKeyName="fk_layouting_item_from_id" foreignKeyIndex="ix_layouting_item_from_id"/>
+            <column name="to_id" type="uuid" references="cell.id" foreignKeyName="fk_layouting_item_to_id" foreignKeyIndex="ix_layouting_item_to_id"/>
+            <column name="product_id" type="uuid" notnull="true" references="product.id" foreignKeyName="fk_layouting_item_product_id" foreignKeyIndex="ix_layouting_item_product_id"/>
+            <column name="lot_id" type="uuid" references="lot.id" foreignKeyName="fk_layouting_item_lot_id" foreignKeyIndex="ix_layouting_item_lot_id"/>
+            <column name="quantity" type="decimal" notnull="true"/>
+        </createTable>
+        <createTable name="lot" identityType="external" pkName="pk_lot">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="product.id" foreignKeyName="fk_lot_owner_id" foreignKeyIndex="ix_lot_owner_id"/>
+            <column name="date" type="timestamp" notnull="true"/>
+            <column name="document_id" type="uuid" notnull="true" references="document.id" foreignKeyName="fk_lot_document_id" foreignKeyIndex="ix_lot_document_id"/>
+            <column name="oem_code" type="varchar"/>
+            <column name="barcode" type="varchar"/>
+            <column name="incoming_quantity" type="decimal" notnull="true"/>
+            <column name="price" type="decimal" notnull="true"/>
+            <column name="price_currency" type="varchar(3)"/>
+            <column name="weight" type="decimal"/>
+            <column name="cost" type="decimal"/>
+            <column name="cost_currency" type="varchar(3)"/>
+            <uniqueConstraint name="uq_lot_owner_id_barcode" columnNames="owner_id,barcode" oneToOne="false" nullableColumns="barcode"/>
+        </createTable>
+        <createTable name="ordering" identityType="external" pkName="pk_ordering">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="date" type="timestamp" defaultValue="now" notnull="true"/>
+            <column name="code" type="varchar" notnull="true"/>
+            <column name="active" type="boolean" defaultValue="false" notnull="true"/>
+            <column name="counterparty_id" type="uuid" notnull="true" references="counterparty.id" foreignKeyName="fk_ordering_counterparty_id" foreignKeyIndex="ix_ordering_counterparty_id"/>
+            <column name="contract_id" type="uuid" notnull="true" references="contract.id" foreignKeyName="fk_ordering_contract_id" foreignKeyIndex="ix_ordering_contract_id"/>
+            <column name="currency" type="varchar(3)" notnull="true"/>
+            <column name="store_id" type="uuid" notnull="true" references="store.id" foreignKeyName="fk_ordering_store_id" foreignKeyIndex="ix_ordering_store_id"/>
+        </createTable>
+        <createTable name="ordering_item" pkName="pk_ordering_item">
+            <column name="owner_id" type="uuid" notnull="true" primaryKey="true" references="ordering.id" foreignKeyName="fk_ordering_item_owner_id" foreignKeyIndex="ix_ordering_item_owner_id"/>
+            <column name="order_no" type="integer" notnull="true" primaryKey="true"/>
+            <column name="product_id" type="uuid" notnull="true" references="product.id" foreignKeyName="fk_ordering_item_product_id" foreignKeyIndex="ix_ordering_item_product_id"/>
+            <column name="quantity" type="decimal" notnull="true"/>
+            <column name="price" type="decimal" notnull="true"/>
+            <column name="summa" type="decimal" notnull="true"/>
+            <column name="cell_id" type="uuid" references="cell.id" foreignKeyName="fk_ordering_item_cell_id" foreignKeyIndex="ix_ordering_item_cell_id"/>
+            <column name="lot_id" type="uuid" references="lot.id" foreignKeyName="fk_ordering_item_lot_id" foreignKeyIndex="ix_ordering_item_lot_id"/>
+            <uniqueConstraint name="uq_ordering_item_owner_id_order_no" columnNames="owner_id,order_no" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="product" identityType="external" pkName="pk_product">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <column name="vendor_id" type="uuid" notnull="true" references="vendor.id" foreignKeyName="fk_product_vendor_id" foreignKeyIndex="ix_product_vendor_id"/>
+            <column name="oem_code" type="varchar"/>
+            <column name="sku" type="varchar"/>
+            <column name="barcode" type="varchar"/>
+        </createTable>
+        <createTable name="product_image" identityType="external" pkName="pk_product_image">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="product.id" foreignKeyName="fk_product_image_owner_id" foreignKeyIndex="ix_product_image_owner_id"/>
+            <column name="file" type="blob" notnull="true"/>
+            <column name="type" type="varchar"/>
+            <column name="mime_type" type="varchar" defaultValue="'application/octet-stream'" notnull="true"/>
+        </createTable>
+        <createTable name="auth_references" identityType="external" pkName="pk_auth_references">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="auth_roles.id" foreignKeyName="fk_auth_references_owner_id" foreignKeyIndex="ix_auth_references_owner_id"/>
+            <column name="entity" type="varchar(12)" notnull="true" checkConstraint="check ( entity in ('Vendor','Product','Lot','Counterparty','Contract','BankAccount','Store','Cell','User','Role'))" checkConstraintName="ck_auth_references_entity"/>
+            <column name="allow_create" type="boolean"/>
+            <column name="allow_read" type="boolean"/>
+            <column name="allow_update" type="boolean"/>
+            <column name="allow_delete" type="boolean"/>
+            <column name="allow_list" type="boolean"/>
+            <uniqueConstraint name="uq_auth_references_owner_id_entity" columnNames="owner_id,entity" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="auth_reports" identityType="external" pkName="pk_auth_reports">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="owner_id" type="uuid" notnull="true" references="auth_roles.id" foreignKeyName="fk_auth_reports_owner_id" foreignKeyIndex="ix_auth_reports_owner_id"/>
+            <column name="report" type="varchar(7)" notnull="true" checkConstraint="check ( report in ('Version'))" checkConstraintName="ck_auth_reports_report"/>
+            <column name="allow_use" type="boolean"/>
+            <uniqueConstraint name="uq_auth_reports_owner_id_report" columnNames="owner_id,report" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="auth_roles" identityType="external" pkName="pk_auth_roles">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <uniqueConstraint name="uq_auth_roles_name" columnNames="name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="store" identityType="external" pkName="pk_store">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <uniqueConstraint name="uq_store_name" columnNames="name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="auth_users" identityType="external" pkName="pk_auth_users">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <column name="password_hash" type="varchar" notnull="true"/>
+            <uniqueConstraint name="uq_auth_users_name" columnNames="name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="auth_user_roles" pkName="pk_auth_user_roles">
+            <column name="owner_id" type="uuid" notnull="true" references="auth_users.id" foreignKeyName="fk_auth_user_roles_owner_id" foreignKeyIndex="ix_auth_user_roles_owner_id"/>
+            <column name="role_id" type="uuid" notnull="true" references="auth_roles.id" foreignKeyName="fk_auth_user_roles_role_id" foreignKeyIndex="ix_auth_user_roles_role_id"/>
+            <uniqueConstraint name="uq_auth_user_roles_owner_id_role_id" columnNames="owner_id,role_id" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createTable name="vendor" identityType="external" pkName="pk_vendor">
+            <column name="id" type="uuid" primaryKey="true" identity="true"/>
+            <column name="name" type="varchar" notnull="true"/>
+            <uniqueConstraint name="uq_vendor_name" columnNames="name" oneToOne="false" nullableColumns=""/>
+        </createTable>
+        <createIndex indexName="ix_bank_account_owner_id_bank" tableName="bank_account" columns="owner_id,bank"/>
+        <createIndex indexName="ix_bank_account_bik" tableName="bank_account" columns="bik"/>
+        <createIndex indexName="ix_bank_account_account_number" tableName="bank_account" columns="account_number"/>
+        <createIndex indexName="ix_lot_date" tableName="lot" columns="date"/>
+        <createIndex indexName="ix_lot_oem_code" tableName="lot" columns="oem_code"/>
+        <createIndex indexName="ix_product_barcode" tableName="product" columns="barcode"/>
+        <createIndex indexName="ix_product_oem_code" tableName="product" columns="oem_code"/>
+        <createIndex indexName="ix_product_sku" tableName="product" columns="sku"/>
+        <createIndex indexName="ix_product_vendor_id_oem_code" tableName="product" columns="vendor_id,oem_code"/>
+    </changeSet>
+</migration>

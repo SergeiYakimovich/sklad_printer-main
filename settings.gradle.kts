@@ -1,0 +1,1 @@
+rootProject.name = "site.shaerware.store"

@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <alterColumn columnName="entity" tableName="auth_references" checkConstraint="check ( entity in ('Vendor','Product','Lot','Counterparty','Contract','BankAccount','Store','Cell','User','Role','Host','Printer','PrintJobs'))" checkConstraintName="ck_auth_references_entity"/>
+    </changeSet>
+</migration>

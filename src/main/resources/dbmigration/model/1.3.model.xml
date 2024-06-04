@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<migration xmlns="http://ebean-orm.github.io/xml/ns/dbmigration">
+    <changeSet type="apply">
+        <addColumn tableName="printer">
+            <column name="col_count" type="integer"/>
+            <column name="row_count" type="integer"/>
+        </addColumn>
+    </changeSet>
+    <changeSet type="pendingDrops">
+        <dropColumn columnName="cols" tableName="printer"/>
+        <dropColumn columnName="rows" tableName="printer"/>
+    </changeSet>
+</migration>
