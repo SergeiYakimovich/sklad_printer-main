@@ -1,8 +1,8 @@
 FROM gradle:7.4.0-jdk17
 
-WORKDIR /sklad_printer-main
+WORKDIR /app
 
-COPY /sklad_printer-main .
+COPY /app .
 
 RUN gradle installDist
 
