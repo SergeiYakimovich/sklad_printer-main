@@ -1,9 +1,6 @@
 FROM openjdk:19
-RUN microdnf install findutils
 
-# ARG GRADLE_VERSION=8.5
-#
-# RUN apt-get update && apt-get install -yq make unzip
+RUN microdnf install findutils
 
 WORKDIR .
 
