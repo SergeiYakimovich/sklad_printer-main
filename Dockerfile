@@ -8,7 +8,7 @@ WORKDIR .
 
 COPY . .
 
-RUN ./gradlew installDist
+RUN gradle installDist
 
 CMD ./build/install/site.shaerware.store/bin/site.shaerware.store
 
