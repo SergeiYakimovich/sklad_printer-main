@@ -1,8 +1,8 @@
 FROM gradle:7.4.0-jdk17
 
-WORKDIR /site.shaerware.store
+WORKDIR /sklad_printer-main
 
-COPY /site.shaerware.store .
+COPY /sklad_printer-main .
 
 RUN gradle installDist
 
