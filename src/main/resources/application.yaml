@@ -19,9 +19,13 @@ ebean:
 
 datasource:
   db:
-    username: postgres
-    password: ''
-    url: "jdbc:postgresql://localhost:5432/store"
+    url: "jdbc:postgresql://dpg-cpfe2n7109ks73bi9rcg-a:5432/store_vu44?password=VHHud4jJ8aUeu8k7xnaHOcgNcasWY7O8&user=store_vu44_user"
+
+#datasource:
+#  db:
+#    username: postgres
+#    password: ''
+#    url: "jdbc:postgresql://localhost:5432/store"
 
 jwt:
   secret: "7e62d0da-a6a5-4042-b49d-7c391e87bf93"
