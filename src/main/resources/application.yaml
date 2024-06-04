@@ -18,9 +18,9 @@ ebean:
 
 datasource:
   db:
-    username: $DATABASE_USERNAME
-    password: $DATABASE_PASSWORD
-    url: $DATABASE_URL
+    username: store_vu44_user
+    password: VHHud4jJ8aUeu8k7xnaHOcgNcasWY7O8
+    url: "jdbc:postgresql://dpg-cpfe2n7109ks73bi9rcg-a:5432/store_vu44"
 
 #datasource:
 #  db:
