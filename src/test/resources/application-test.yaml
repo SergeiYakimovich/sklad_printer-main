@@ -2,6 +2,6 @@
 ebean:
   test:
 #    shutdown: remove # stop | remove
-    platform: h2 # h2, postgres, mysql, mariadb, nuodb, sqlserver, oracle, hana, clickhouse, cockroach, sqlite
+    platform: postgres # h2, postgres, mysql, mariadb, nuodb, sqlserver, oracle, hana, clickhouse, cockroach, sqlite
     ddlMode: dropCreate # none | dropCreate |  migrations
     dbName: my_app
