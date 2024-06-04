@@ -1,4 +1,4 @@
-FROM openjdk:15
+FROM openjdk:18
 
 # ARG GRADLE_VERSION=8.5
 #
