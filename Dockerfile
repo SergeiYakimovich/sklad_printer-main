@@ -9,3 +9,7 @@ COPY . .
 RUN ./gradlew installDist
 
 CMD ./build/install/site.shaerware.store/bin/site.shaerware.store
+
+FROM node:19-alpine
+
+RUN cd ui && npm install && npm run serve
