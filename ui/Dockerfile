@@ -4,7 +4,7 @@ WORKDIR .
 
 COPY . .
 
-WORKDIR /ui
+#WORKDIR /ui
 
 RUN ls
 
