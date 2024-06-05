@@ -1,25 +1,11 @@
-#FROM openjdk:19
-#
-#RUN microdnf install findutils
-#
-#WORKDIR .
-#
-#COPY . .
-#
-#RUN ./gradlew installDist
-#
-#CMD ./build/install/site.shaerware.store/bin/site.shaerware.store
+FROM openjdk:19
 
-FROM node:19-alpine
+RUN microdnf install findutils
 
 WORKDIR .
 
 COPY . .
 
-WORKDIR /ui
+RUN ./gradlew installDist
 
-RUN ls
-
-RUN npm install
-
-RUN npm run serve
+CMD ./build/install/site.shaerware.store/bin/site.shaerware.store
