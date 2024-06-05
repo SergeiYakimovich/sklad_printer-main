@@ -4,10 +4,14 @@ WORKDIR .
 
 COPY . .
 
-#WORKDIR /ui
-
 RUN ls
 
 RUN npm install
 
-RUN npm run serve
+RUN ls
+
+COPY . ./
+
+RUN ls
+
+CMD npm run serve
