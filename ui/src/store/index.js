@@ -38,7 +38,9 @@ export default createStore({
         },
 
         apiRoot() {
-            return "http://localhost:8090/api/v1/"
+//            !!!!
+//            return "http://localhost:8090/api/v1/"
+            return "https://sklad-printer-main.onrender.com/api/v1/"
         }
     },
 
